@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pocket Jelly 🎐</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy-deep: #0b1b33;
+  --navy-mid: #14284a;
+  --midnight: #071122;
+  --teal-glow: #6ef0d6;
+  --coral: #ffb4c6;
+  --moon-cream: #fff6e9;
+  --lilac: #b79ced;
+  --sand: #f0e0c4;
+  --ink: #12203a;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  font-family: 'Nunito', sans-serif;
+  background: var(--navy-deep);
+  overflow: hidden;
+  color: var(--moon-cream);
+}
+
+
+.sky {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(180deg, var(--navy-deep) 0%, var(--navy-mid) 100%);
+  transition: background 1.2s ease;
+  z-index: 0;
+}
+.sky.night {
+  background: linear-gradient(180deg, var(--midnight) 0%, #0a1730 100%);
+}
+.stars {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+  background-image:
+    radial-gradient(1.5px 1.5px at 20% 30%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 70% 20%, #fff, transparent),
+    radial-gradient(1px 1px at 40% 70%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 85% 60%, #fff, transparent),
+    radial-gradient(1px 1px at 55% 45%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 10% 80%, #fff, transparent),
+    radial-gradient(1px 1px at 90% 85%, #fff, transparent);
+}
+.sky.night .stars { opacity: 0.8; }
+
+/* ---------- layout ---------- */
+.app {
+  position: relative;
+  z-index: 1;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 28px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.topbar h1 {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 2rem;
+  margin: 0;
+  letter-spacing: 0.5px;
+  color: var(--moon-cream);
+}
+.subtitle {
+  margin: 2px 0 18px;
+  font-size: 0.85rem;
+  opacity: 0.6;
+  font-style: italic;
+}
+
+/* ---------- jar ---------- */
+.jar-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.jar {
+  position: relative;
+  width: 240px;
+  height: 280px;
+  border-radius: 20px 20px 60px 60px;
+  overflow: hidden;
+  border: 3px solid rgba(255,255,255,0.25);
+  box-shadow: inset 0 0 30px rgba(255,255,255,0.08), 0 12px 30px rgba(0,0,0,0.4);
+}
+
+.jar-glass {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, rgba(255,255,255,0.12), transparent 40%);
+  z-index: 5;
+  pointer-events: none;
+}
+
+.water {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(94,168,230,0.25), rgba(14,50,90,0.55));
+  cursor: pointer;
+}
+
+.jar-lid {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 130px;
+  height: 24px;
+  background: var(--lilac);
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+.sand {
+  width: 200px;
+  height: 14px;
+  margin-top: -8px;
+  background: var(--sand);
+  border-radius: 0 0 40px 40px;
+  opacity: 0.85;
+}
+
+/* ---------- jelly ---------- */
+.jelly {
+  position: absolute;
+  left: 50%;
+  top: 45%;
+  width: 100px;
+  height: 92px;
+  transform: translate(-50%, -50%);
+  animation: float 4.5s ease-in-out infinite;
+  z-index: 3;
+  transition: left 1.4s ease, top 1.4s ease;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+  50% { transform: translate(-50%, -50%) translateY(-14px); }
+}
+
+.jelly-glow {
+  position: absolute;
+  inset: -20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(110,240,214,0.0) 0%, rgba(110,240,214,0.0) 100%);
+  filter: blur(10px);
+  transition: background 1s ease;
+  z-index: -1;
+}
+.night .jelly-glow {
+  background: radial-gradient(circle, rgba(110,240,214,0.55) 0%, rgba(110,240,214,0) 70%);
+}
+
+.jelly-svg { width: 100%; height: 100%; overflow: visible; }
+
+.jelly-dome {
+  fill: var(--coral);
+  transition: fill 1s ease;
+}
+.night .jelly-dome { fill: var(--teal-glow); }
+
+.jelly-face .eye { fill: var(--ink); }
+.mouth {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+.tentacle {
+  fill: none;
+  stroke: var(--coral);
+  stroke-width: 5;
+  stroke-linecap: round;
+  opacity: 0.85;
+  transition: stroke 1s ease;
+  transform-origin: top center;
+  animation: wave 2.4s ease-in-out infinite;
+}
+.night .tentacle { stroke: var(--teal-glow); }
+.t2 { animation-delay: 0.2s; }
+.t3 { animation-delay: 0.4s; }
+.t4 { animation-delay: 0.6s; }
+
+@keyframes wave {
+  0%, 100% { transform: rotate(-6deg); }
+  50% { transform: rotate(6deg); }
+}
+
+/* ---------- bubbles ---------- */
+.bubbles { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.bubble {
+  position: absolute;
+  bottom: -10px;
+  width: 6px;
+  height: 6px;
+  background: rgba(255,255,255,0.5);
+  border-radius: 50%;
+  animation: rise linear forwards;
+}
+@keyframes rise {
+  to { transform: translateY(-300px); opacity: 0; }
+}
+
+/* ---------- food ---------- */
+.food-layer { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
+.food {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--lilac);
+  box-shadow: 0 0 6px rgba(183,156,237,0.8);
+  animation: sink 2.2s ease-in forwards;
+}
+@keyframes sink {
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(180px); opacity: 0; }
+}
+
+/* ---------- hearts ---------- */
+.hearts { position: absolute; inset: 0; pointer-events: none; }
+.heart {
+  position: absolute;
+  font-size: 16px;
+  animation: popUp 1.1s ease-out forwards;
+}
+@keyframes popUp {
+  0% { transform: translateY(0) scale(0.6); opacity: 1; }
+  100% { transform: translateY(-50px) scale(1.1); opacity: 0; }
+}
+
+/* ---------- stats ---------- */
+.stats {
+  width: 100%;
+  max-width: 260px;
+  margin-top: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.stat { display: flex; align-items: center; gap: 10px; }
+.stat-label {
+  width: 78px;
+  text-align: left;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.7;
+}
+.bar {
+  flex: 1;
+  height: 10px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.bar-fill {
+  height: 100%;
+  width: 70%;
+  background: linear-gradient(90deg, var(--teal-glow), var(--lilac));
+  transition: width 0.6s ease;
+}
+
+.mood-line {
+  margin-top: 16px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  min-height: 1.2em;
+}
+
+/* ---------- controls ---------- */
+.controls {
+  margin-top: 14px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.btn {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.9rem;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 999px;
+  background: var(--coral);
+  color: var(--ink);
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.6s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+}
+.btn:hover { transform: translateY(-2px); }
+.btn:active { transform: translateY(0); }
+.btn.ghost {
+  background: transparent;
+  border: 2px solid rgba(255,255,255,0.3);
+  color: var(--moon-cream);
+}
+.night .btn:not(.ghost) { background: var(--teal-glow); }
+
+.credit {
+  margin-top: 18px;
+  font-size: 0.7rem;
+  opacity: 0.45;
+}
+
+@media (max-width: 380px) {
+  .jar { width: 210px; height: 250px; }
+}
+</style>
+</head>
+<body>
+
+  <div class="sky" id="sky">
+    <div class="stars" id="stars"></div>
+  </div>
+
+  <main class="app">
+    <header class="topbar">
+      <h1>Pocket Jelly</h1>
+      <p class="subtitle">a tiny jar, a tiny friend</p>
+    </header>
+
+    <section class="jar-wrap">
+      <div class="jar">
+        <div class="jar-glass"></div>
+        <div class="water" id="water">
+
+          <div class="bubbles" id="bubbles"></div>
+          <div class="food-layer" id="foodLayer"></div>
+
+          <div class="jelly" id="jelly">
+            <div class="jelly-glow"></div>
+            <svg viewBox="0 0 120 110" class="jelly-svg">
+              <ellipse class="jelly-dome" cx="60" cy="42" rx="42" ry="34"/>
+              <g class="jelly-face">
+                <circle class="eye" cx="45" cy="40" r="4"/>
+                <circle class="eye" cx="75" cy="40" r="4"/>
+                <path class="mouth" id="mouth" d="M50 52 Q60 58 70 52" />
+              </g>
+              <g class="tentacles">
+                <path class="tentacle t1" d="M35 70 Q30 85 35 100" />
+                <path class="tentacle t2" d="M50 74 Q46 92 50 108" />
+                <path class="tentacle t3" d="M65 74 Q69 92 65 108" />
+                <path class="tentacle t4" d="M80 70 Q85 85 80 100" />
+              </g>
+            </svg>
+            <div class="hearts" id="hearts"></div>
+          </div>
+
+        </div>
+        <div class="jar-lid"></div>
+      </div>
+
+      <div class="sand"></div>
+    </section>
+
+    <section class="stats">
+      <div class="stat">
+        <span class="stat-label">happiness</span>
+        <div class="bar"><div class="bar-fill" id="happyBar"></div></div>
+      </div>
+      <div class="stat">
+        <span class="stat-label">fullness</span>
+        <div class="bar"><div class="bar-fill" id="fullBar"></div></div>
+      </div>
+    </section>
+
+    <p class="mood-line" id="moodLine">Bibble is floating peacefully.</p>
+
+    <section class="controls">
+      <button class="btn" id="feedBtn">🍬 Feed</button>
+      <button class="btn" id="petBtn">✨ Pet</button>
+      <button class="btn ghost" id="toggleTime">🌙 Night</button>
+    </section>
+
+    <footer class="credit">click Bibble directly for extra love</footer>
+  </main>
+
+  <script>
+// ---------- state ----------
+let happiness = 65;
+let fullness = 55;
+let isNight = false;
+
+const jelly = document.getElementById('jelly');
+const bubblesLayer = document.getElementById('bubbles');
+const foodLayer = document.getElementById('foodLayer');
+const heartsLayer = document.getElementById('hearts');
+const happyBar = document.getElementById('happyBar');
+const fullBar = document.getElementById('fullBar');
+const moodLine = document.getElementById('moodLine');
+const feedBtn = document.getElementById('feedBtn');
+const petBtn = document.getElementById('petBtn');
+const toggleTimeBtn = document.getElementById('toggleTime');
+const sky = document.getElementById('sky');
+
+const moodMessages = {
+  happy: [
+    "Bibble is glowing with joy!",
+    "Bibble does a happy little spin.",
+    "Bibble seems very content."
+  ],
+  neutral: [
+    "Bibble is floating peacefully.",
+    "Bibble drifts along, minding its own business.",
+    "Bibble blinks slowly at you."
+  ],
+  hungry: [
+    "Bibble's tummy is rumbling.",
+    "Bibble is eyeing you for snacks.",
+    "Bibble looks a little peckish."
+  ],
+  sleepy: [
+    "Bibble yawns in the moonlight.",
+    "Bibble glows softly, half asleep.",
+    "Bibble is winding down for the night."
+  ]
+};
+
+function pickMessage(mood) {
+  const list = moodMessages[mood];
+  return list[Math.floor(Math.random() * list.length)];
+}
+
+function clampStat(v) {
+  return Math.max(0, Math.min(100, v));
+}
+
+function updateBars() {
+  happyBar.style.width = happiness + '%';
+  fullBar.style.width = fullness + '%';
+}
+
+function updateMood() {
+  let mood = 'neutral';
+  if (fullness < 30) mood = 'hungry';
+  else if (isNight && happiness > 40) mood = 'sleepy';
+  else if (happiness > 75) mood = 'happy';
+
+  moodLine.textContent = pickMessage(mood);
+}
+
+function decayStats() {
+  fullness = clampStat(fullness - 3);
+  happiness = clampStat(happiness - (fullness < 20 ? 4 : 1));
+  updateBars();
+  updateMood();
+}
+
+// ---------- bubbles ----------
+function spawnBubble() {
+  const b = document.createElement('div');
+  b.className = 'bubble';
+  const size = 4 + Math.random() * 6;
+  b.style.width = size + 'px';
+  b.style.height = size + 'px';
+  b.style.left = (10 + Math.random() * 80) + '%';
+  b.style.animationDuration = (2.5 + Math.random() * 2) + 's';
+  bubblesLayer.appendChild(b);
+  setTimeout(() => b.remove(), 4500);
+}
+setInterval(spawnBubble, 900);
+
+// ---------- feeding ----------
+feedBtn.addEventListener('click', () => {
+  dropFood();
+});
+
+function dropFood() {
+  const food = document.createElement('div');
+  food.className = 'food';
+  const leftPos = 30 + Math.random() * 40;
+  food.style.left = leftPos + '%';
+  food.style.top = '10px';
+  foodLayer.appendChild(food);
+
+  // jelly drifts toward the food
+  jelly.style.left = leftPos + '%';
+  jelly.style.top = '55%';
+
+  setTimeout(() => {
+    food.remove();
+    fullness = clampStat(fullness + 18);
+    happiness = clampStat(happiness + 6);
+    updateBars();
+    updateMood();
+    bounceJelly();
+    jelly.style.top = '45%';
+  }, 1100);
+}
+
+// ---------- petting ----------
+function petJelly(e) {
+  happiness = clampStat(happiness + 10);
+  updateBars();
+  updateMood();
+  bounceJelly();
+  spawnHeart();
+}
+petBtn.addEventListener('click', (e) => petJelly(e));
+jelly.addEventListener('click', (e) => {
+  e.stopPropagation();
+  petJelly(e);
+});
+
+function spawnHeart() {
+  const h = document.createElement('div');
+  h.className = 'heart';
+  h.textContent = '💗';
+  h.style.left = (35 + Math.random() * 30) + '%';
+  h.style.top = '30%';
+  heartsLayer.appendChild(h);
+  setTimeout(() => h.remove(), 1200);
+}
+
+function bounceJelly() {
+  jelly.style.animation = 'none';
+  jelly.offsetHeight; // reflow to restart animation
+  jelly.style.animation = 'float 4.5s ease-in-out infinite';
+}
+
+// ---------- day / night ----------
+toggleTimeBtn.addEventListener('click', () => {
+  isNight = !isNight;
+  document.body.classList.toggle('night', isNight);
+  sky.classList.toggle('night', isNight);
+  toggleTimeBtn.textContent = isNight ? '☀️ Day' : '🌙 Night';
+  updateMood();
+});
+
+// ---------- init ----------
+updateBars();
+updateMood();
+setInterval(decayStats, 6000);
+</script>
+</body>
+</html>
