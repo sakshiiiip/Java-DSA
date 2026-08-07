@@ -1,0 +1,24 @@
+public class FiboRecurs {
+    static int fibo(int n){
+        if (n<=1){
+            return n;
+        }
+        
+          int last =  fibo (n-1);
+          int secondlast = fibo(n-2);
+        
+         
+          return last + secondlast;
+
+        }
+    
+    public static void main(String[] args) {
+       
+
+        int n=3;
+
+System.out.println(fibo(n));
+    }
+}
+
+
